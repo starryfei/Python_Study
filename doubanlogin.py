@@ -34,9 +34,6 @@ try:
 except:
     print("Cookies未能加载")
     # cookies加载不成功，则输入账号密码信息
-    # datas['form_email'] = '15611872648'
-    # datas['form_password'] = '19930421fei'
-
 
 # 获取验证码
 def getcapthca():
@@ -75,10 +72,8 @@ def isLogin():
 
 
 def loggin():
-    # datas['form_email'] = input('Please input your account:')
-    # datas['form_password'] = input('Please input your password:')
-    datas['form_email'] = '15611872648'
-    datas['form_password'] = '19930421fei'
+    datas['form_email'] = input('Please input your account:')
+    datas['form_password'] = input('Please input your password:')
     captcha, captcha_id = getcapthca()
     # 增加表数据
     datas['captcha-solution'] = captcha
@@ -99,7 +94,7 @@ def loggin():
 
 
 if __name__ == '__main__':
-    # if isLogin():
-    #     print("已经登录成功！")
-    # else:
+    if isLogin():
+        print("已经登录成功！")
+    else:
         loggin()
