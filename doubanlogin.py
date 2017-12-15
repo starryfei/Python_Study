@@ -3,7 +3,7 @@
 from http import cookiejar
 from os import remove
 from urllib.request import urlretrieve
-
+import SaveData
 import requests
 from bs4 import BeautifulSoup
 
@@ -85,12 +85,19 @@ def loggin():
     result = soup.findAll('div', attrs={'class': 'title'})
     # 进入豆瓣登陆后页面，打印热门内容
     # print(result)
+    #保存列表
+    nameList = []
     for item in result:
         # print(item)
         print(item.find('a').get_text(),item.find('a').get('href'))
+        title = item.find('a').get_text()
+        urlpath = item.find('a').get('href')
+        data = Data(title, urlpath, "匿名")
+        nameList.append(data)
         # 保存 cookies 到文件，
         # 下次可以使用 cookie 直接登录，不需要输入账号和密码
-        session.cookies.save()
+    session.cookies.save()
+    return nameList
 
 
 if __name__ == '__main__':
@@ -98,3 +105,6 @@ if __name__ == '__main__':
         print("已经登录成功！")
     else:
         loggin()
+        list = loggin()
+        con = ConnectSql()
+        con.insert(list)
