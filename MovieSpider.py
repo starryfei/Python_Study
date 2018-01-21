@@ -6,14 +6,16 @@ import re
 
 import jieba    #分词包
 import pandas as pd
-
-
-def get_movie_list():
-    URL = "https://movie.douban.com/cinema/nowplaying/beijing/"
-
-    resp = request.urlopen(URL)
-    htmldata = resp.read().decode("utf-8")
-    soup = BeautifulSoup(htmldata, "html.parser")
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
+import numpy
+import spider.login
+def get_movie_list(page):
+    # URL = "https://movie.douban.com/cinema/nowplaying/beijing/"
+    #
+    # resp = request.urlopen(URL)
+    # htmldata = resp.read().decode("utf-8")
+    soup = BeautifulSoup(page, "html.parser")
     nowplaying = soup.find_all("div", id="nowplaying")
     movieList = nowplaying[0].find_all('li', class_='list-item')
     listItem = []
@@ -29,8 +31,8 @@ def get_movie_list():
     return listItem
 
 
-def get_movie_commnts(movie_list, start):
-    comments_url = 'https://movie.douban.com/subject/' + movie_list[0]['id'] + '/comments?start=' + str(
+def get_movie_commnts(movie_list_id, start):
+    comments_url = 'https://movie.douban.com/subject/' + movie_list_id + '/comments?start=' + str(
         start) + '&limit=20'
     resp_comments = request.urlopen(comments_url)
     comments_data = resp_comments.read().decode("utf-8")
@@ -51,30 +53,44 @@ def get_movie_commnts(movie_list, start):
 
 
 if __name__ == "__main__":
-    movie_list = get_movie_list()
-    content = []
-    for i in range(0, 10):
-        start = i * 20
-        content.append(get_movie_commnts(movie_list, start))
-    fh = open("comments.txt", 'w', encoding='utf8')
-    str_value = ''
-    cleaned_comments =''
-    for s in range(len(content)):
-        str_value = str_value + (str(content[s])).strip()
-        pattern = re.compile(r'[\u4e00-\u9fa5]+')
-        filterdata = re.findall(pattern, str_value)
-        cleaned_comments =cleaned_comments+ ''.join(filterdata)
-        fh.write(cleaned_comments)
-    # print(cleaned_comments)
-    # 进行文字统计
-    s = jieba._lcut(cleaned_comments)
-    word_count = pd.DataFrame({'s':s})
-    stop_words = pd.read_csv("stopwords.txt",index_col=False,quoting=3, sep="\t", names=['stopword'],encoding='utf-8')
-    word_count = word_count[~word_count.s.isin(stop_words.stopword)]
-    word_count = word_count.groupby(['s']).size()
-    print(word_count.sort_values(ascending=False))
+    page = spider.login.loggin()
+    movie_list = get_movie_list(page)
+    for l in movie_list:
+        content = []
+        for i in range(0, 10):
+            start = i * 20
+            content.append(get_movie_commnts(l['id'], start))
+        fh = open(l['data-title']+".txt", 'w', encoding='utf8')
+        str_value = ''
+        cleaned_comments =''
+        for s in range(len(content)):
+            str_value = str_value + (str(content[s])).strip()
+            pattern = re.compile(r'[\u4e00-\u9fa5]+')
+            filterdata = re.findall(pattern, str_value)
+            cleaned_comments =cleaned_comments+ ''.join(filterdata)
+            fh.write(cleaned_comments)
+        fh.close()
+        # print(cleaned_comments)
+        # 去掉停用词
+        s = jieba._lcut(cleaned_comments)
+        word_count = pd.DataFrame({'s':s})
+        stop_words = pd.read_csv("stopwords.txt",index_col=False,quoting=3, sep="\t", names=['stopword'],encoding='utf-8')
+        word_count = word_count[~word_count.s.isin(stop_words.stopword)]
+        # 统计词频
+        words_stat = word_count.groupby(by=['s'])['s'].agg({"计数": numpy.size})
+        words_stat = words_stat.reset_index().sort_values(by=["计数"], ascending=False)
+        word_count = word_count.groupby(['s']).size()
+            # print(word_count.sort_values(ascending=False))
 
-    # 用词云进行显示
+        # 用词云进行显示
+    wordcloud = WordCloud(font_path="simhei.ttf", background_color="white", max_font_size=80)  # 指定字体类型、字体大小和字体颜色
+    word_frequence = {x[0]: x[1] for x in words_stat.head(1000).values}
 
-    # word_count.head()
-    fh.close()
+    word_frequence_list = []
+    for key in word_frequence:
+         temp = (key, word_frequence[key])
+         word_frequence_list.append(temp)
+
+    wordcloud = wordcloud.fit_words(word_frequence_list)
+    # plt.imshow(wordcloud)
+
