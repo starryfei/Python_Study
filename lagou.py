@@ -8,6 +8,9 @@ class job():
         self.__companyid = companyid
         self.__salary = salary
         self.__positionname = positionname
+    
+    def getCompany(self):
+        return  self.__company
 
 
 URL= 'https://www.lagou.com/zhaopin/Java/'
@@ -22,4 +25,9 @@ info = requests.get(URL, headers=headers)
 data = BeautifulSoup(info.text,"html.parser")
 jobinfo = data.findAll('ul',{'class':'item_con_list'})
 companydata = jobinfo[1].find_all('li',class_='con_list_item default_list')
-print(companydata)
+jobList =[]
+for da in companydata:
+    job1 = job(da.get('data-company'),da.get('data-companyid'),da.get('data-salary'),da.get('data-positionname'))
+    print(job1.getCompany())
+    jobList.append(job1)
+print(jobList)  
