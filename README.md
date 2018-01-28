@@ -15,7 +15,7 @@
 
 ------------
 
- ### 爬取拉钩Java的招聘信息lagoupy
+ ### 爬取拉钩Java的招聘信息lagou.py
 - :fa-check: url:https://www.lagou.com/zhaopin/Java/
 - :fa-check: 需要构造header,不能直接网页访问网页
 - :fa-check: 抓取30页的数据需要休眠,
