@@ -15,7 +15,7 @@ def get_movie_list(page):
 
     resp = request.urlopen(URL)
     htmldata = resp.read().decode("utf-8")
-    soup = BeautifulSoup(page, "html.parser")
+    soup = BeautifulSoup(htmldata, "html.parser")
     nowplaying = soup.find_all("div", id="nowplaying")
     movieList = nowplaying[0].find_all('li', class_='list-item')
     listItem = []
@@ -52,14 +52,17 @@ def get_movie_commnts(movie_list_id, start):
 
 
 if __name__ == "__main__":
-    page = spider.login.loggin()
+    # page = spider.login.loggin()
+    page =None
     movie_list = get_movie_list(page)
+    name =[]
     for l in movie_list:
+        name = l['id']
         content = []
         for i in range(0, 10):
             start = i * 20
             content.append(get_movie_commnts(l['id'], start))
-        fh = open(l['data-title']+".txt", 'w', encoding='utf8')
+        # fh = open(l['data-title']+".txt", 'w', encoding='utf8')
         str_value = ''
         cleaned_comments =''
         for s in range(len(content)):
@@ -67,9 +70,9 @@ if __name__ == "__main__":
             pattern = re.compile(r'[\u4e00-\u9fa5]+')
             filterdata = re.findall(pattern, str_value)
             cleaned_comments =cleaned_comments+ ''.join(filterdata)
-            fh.write(cleaned_comments)
-        time.sleep(40000)
-        fh.close()
+            # fh.write(cleaned_comments)
+        time.sleep(10)
+        # fh.close()
         # print(cleaned_comments)
         # 去掉停用词
         segment = jieba._lcut(cleaned_comments)
@@ -86,12 +89,12 @@ if __name__ == "__main__":
         wordcloud = WordCloud(font_path="simhei.ttf", background_color="white", max_font_size=80)  # 指定字体类型、字体大小和字体颜色
         word_frequence = {x[0]: x[1] for x in words_stat.head(1000).values}
 
-    word_frequence_list = []
-    for key in word_frequence:
-         temp = (key, word_frequence[key])
-         word_frequence_list.append(temp)
+        word_frequence_list = []
+        for key in word_frequence:
+             temp = (key, word_frequence[key])
+             word_frequence_list.append(temp)
 
-    wordcloud = wordcloud.fit_words(word_frequence_list)
-    plt.imsave('img.jpg', wordcloud)
-    plt.imshow(wordcloud, interpolation='bilinear')
+        wordcloud = wordcloud.fit_words(word_frequence_list)
+        plt.imsave(l['id']+'img.jpg', wordcloud)
+        plt.imshow(wordcloud, interpolation='bilinear')
 
