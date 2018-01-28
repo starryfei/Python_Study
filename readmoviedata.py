@@ -8,7 +8,7 @@ import numpy
 
 
 cleaned_comments = ''
-for line in open("michao.txt",'r',encoding= 'UTF-8'):
+for line in open("file\michao.txt",'r',encoding= 'UTF-8'):
     cleaned_comments = cleaned_comments+line
 
 segment = jieba._lcut(cleaned_comments)
@@ -31,6 +31,6 @@ for key in word_frequence:
     word_frequence_list.append(temp)
 
 wordcloud = wordcloud.fit_words(dict(word_frequence_list))
-plt.imsave('img.jpg', wordcloud)
+plt.imsave('file\img.jpg', wordcloud)
 
 plt.imshow(wordcloud,interpolation='bilinear')

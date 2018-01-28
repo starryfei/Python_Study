@@ -62,7 +62,7 @@ if __name__ == "__main__":
         for i in range(0, 10):
             start = i * 20
             content.append(get_movie_commnts(l['id'], start))
-        # fh = open(l['data-title']+".txt", 'w', encoding='utf8')
+        fh = open(l['data-title']+".txt", 'w', encoding='utf8')
         str_value = ''
         cleaned_comments =''
         for s in range(len(content)):
@@ -70,14 +70,14 @@ if __name__ == "__main__":
             pattern = re.compile(r'[\u4e00-\u9fa5]+')
             filterdata = re.findall(pattern, str_value)
             cleaned_comments =cleaned_comments+ ''.join(filterdata)
-            # fh.write(cleaned_comments)
+            fh.write(cleaned_comments)
         time.sleep(10)
-        # fh.close()
+        fh.close()
         # print(cleaned_comments)
         # 去掉停用词
         segment = jieba._lcut(cleaned_comments)
         word_count = pd.DataFrame({'segment':segment})
-        stop_words = pd.read_csv("stopwords.txt",index_col=False,quoting=3, sep="\t", names=['stopword'],encoding='utf-8')
+        stop_words = pd.read_csv("file\stopwords.txt",index_col=False,quoting=3, sep="\t", names=['stopword'],encoding='utf-8')
         word_count = word_count[~word_count.segment.isin(stop_words.stopword)]
         # 统计词频
         words_stat = word_count.groupby(by=['segment'])['segment'].agg({"size"})
@@ -86,7 +86,7 @@ if __name__ == "__main__":
         # print(word_count.sort_values(ascending=False))
 
         # 用词云进行显示
-        wordcloud = WordCloud(font_path="simhei.ttf", background_color="white", max_font_size=80)  # 指定字体类型、字体大小和字体颜色
+        wordcloud = WordCloud(font_path="file\simhei.ttf", background_color="white", max_font_size=80)  # 指定字体类型、字体大小和字体颜色
         word_frequence = {x[0]: x[1] for x in words_stat.head(1000).values}
 
         word_frequence_list = []
