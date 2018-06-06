@@ -5,6 +5,7 @@
  ### 豆瓣模拟登陆,获取首页热门内容--doubanlogin.py
 - :fa-check:  post addresss: https://www.douban.com/accounts/login<br>
 - :fa-check: capthca address: https://www.douban.com/
+- :fa-check: 使用[tesseract-ocr](https://github.com/tesseract-ocr/ "tesseract-ocr")进行验证码识别,  需要下载安装并且设置环境变量**[wiki](https://github.com/tesseract-ocr/tesseract/wiki "wiki")**
 
 ------------
 
