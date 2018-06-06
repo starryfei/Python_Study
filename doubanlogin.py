@@ -50,12 +50,14 @@ def getcapthca():
     try:
         #   使用OCR图像识别，获取验证码
         capthca = pytesseract.image_to_string(im, lang='eng')
-    except:
-        #  识别失败手动输入验证码        
+        if capthca == '':
+            #  识别失败手动输入验证码   
+            im.show()
+            im.close()
+            capthca = input('输入验证码:')
+    except:   
         print('到本地目录打开captcha.jpg获取验证码')
-        im.show()
-        im.close()
-        capthca = input('输入验证码:')
+        
     finally:
         remove('captcha.jpg')
         captcha_id = soup.find(
