@@ -6,6 +6,7 @@ from urllib.request import urlretrieve
 import SaveData
 import requests
 from bs4 import BeautifulSoup
+import pytesseract
 
 try:
     import http.cookiejar
@@ -45,14 +46,17 @@ def getcapthca():
     # 利用bs4获得验证码图片地址,并且保存到本地
     img_src = soup.find('img', id='captcha_image')['src']
     urlretrieve(img_src, "captcha.jpg")
+    im = Image.open('captcha.jpg')
     try:
-        im = Image.open('captcha.jpg')
+        #   使用OCR图像识别，获取验证码
+        capthca = pytesseract.image_to_string(im, lang='eng')
+    except:
+        #  识别失败手动输入验证码        
+        print('到本地目录打开captcha.jpg获取验证码')
         im.show()
         im.close()
-    except:
-        print('到本地目录打开captcha.jpg获取验证码')
-    finally:
         capthca = input('输入验证码:')
+    finally:
         remove('captcha.jpg')
         captcha_id = soup.find(
             'input', {'type': 'hidden', 'name': 'captcha-id'}).get('value')
@@ -65,7 +69,6 @@ def isLogin():
     logincode = session.get(url, headers=headers, allow_redirects=False).status_code
     # print(logincode)
     if logincode == 200:
-
         return True
     else:
         return False
