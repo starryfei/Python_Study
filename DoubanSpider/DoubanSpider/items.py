@@ -10,5 +10,13 @@ import scrapy
 
 class DoubanspiderItem(scrapy.Item):
     # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    # 小说名字
+    name = scrapy.Field()
+    # 小说作者
+    author = scrapy.Field()
+    # 小说路径
+    url = scrapy.Field()
+    #小说分类
+    categroy = scrapy.Field()
+    #小说内容
+    content = scrapy.Field()
